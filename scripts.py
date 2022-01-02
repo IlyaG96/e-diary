@@ -31,11 +31,21 @@ subjects = [
 
 
 def chose_pupil():
-    while True:
-        name = input("Вас приветствует система взлома электронного дневника!\n "
-                     "Введите, пожалуйста, свои фамилию и имя через пробел\n")
+    pupil = None
+    while not pupil:
+        name = input("Вас приветствует система взлома электронного дневника!\n"
+                     "Введите, пожалуйста, свои фамилию и имя через пробел\n"
+                     ":")
         pupil = Schoolkid.objects.filter(full_name__contains=name)
-        return pupil
+        if not pupil:
+            print("Такой ученик в школе не учится. Попробуйте еще раз или уточните запрос\n"
+                  " (возможно, стоит поменять фамилию и имя местами)")
+        elif len(pupil) > 1:
+            print("Найдено несколько учеников, уточните запрос!")
+            pupil = None
+        else:
+            pupil = pupil.first()
+            return pupil
 
 
 def correct_points(pupil):
@@ -68,18 +78,14 @@ def create_commendation(commendation_subject, pupil):
                         teacher=teacher_id,
                         subject=subject)
 
+
 while True:
     pupil = chose_pupil()
-    if not pupil:
-        print("Такой ученик в школе не учится. Попробуйте еще раз")
-    if len(pupil) > 1:
-        print("Найдено несколько учеников, уточните запрос!")
-    else:
-        pupil = pupil.first()
-    action = int(input("выберите желаемое действие\n"
-                       "1 - исправить оценки\n"
-                       "2 - удалить замечания\n"
-                       "3 - создать похвалу\n"))
+    action = int(input("Введите желаемое действие: \n"
+                       "1 - Исправить оценки\n"
+                       "2 - Удалить замечания\n"
+                       "3 - Создать похвалу\n"
+                       ":"))
     if action not in range(1, 4):
         commendation_subject = input("Напишите название предмета, на котором вас надо похвалить")
 
