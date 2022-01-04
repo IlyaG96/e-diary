@@ -9,7 +9,7 @@ from datacenter.models import Commendation
 from datacenter.models import Subject
 from datacenter.models import Teacher
 
-commendations = [
+COMMENDATIONS = [
     "Молодец!", "Отлично!", "Хорошо!", "Гораздо лучше, чем я ожидал!",
     "Ты меня приятно удивил!", "Великолепно!", "Прекрасно!", "Ты меня очень обрадовал!",
     "Именно этого я давно ждал от тебя!", "Сказано здорово – просто и ясно!",
@@ -23,7 +23,7 @@ commendations = [
     "Теперь у тебя точно все получится!"
 ]
 
-subjects = [
+SUBJECTS = [
     "Краеведение", "География", "Математика", "Музыка", "Физкультура",
     "Изобразительное искусство", "Технология", "Русский язык", "Литература",
     "Обществознание", "Иностранный язык", "Биология", "История",
@@ -31,13 +31,13 @@ subjects = [
 ]
 
 
-def chose_pupil():
+def choice_pupil():
     pupil = None
     print("Вас приветствует система взлома электронного дневника!\n"
           "Введите, пожалуйста, свои фамилию и имя через пробел")
     while not pupil:
         name = input(":")
-        pupil = Schoolkid.objects.filter(full_name__contains=name.title())
+        pupil = Schoolkid.objects.filter(full_name__icontains=name.title())
         if not pupil:
             print("Такой ученик в школе не учится. Попробуйте еще раз или уточните запрос\n"
                   "(возможно, стоит поменять фамилию и имя местами)")
@@ -77,7 +77,7 @@ def create_commendation(commendation_subject, pupil):
                                                schoolkid=pupil,
                                                created=random_date_subject.date)
 
-    commendation.create(text=random.choice(commendations),
+    commendation.create(text=random.choice(COMMENDATIONS),
                         created=random_date_subject.date,
                         schoolkid=pupil,
                         teacher=teacher_id,
@@ -86,7 +86,7 @@ def create_commendation(commendation_subject, pupil):
 
 while True:
     choice, commendation_subject = "", ""
-    pupil = chose_pupil()
+    pupil = choice_pupil()
     correct_points(pupil)
     remove_chastisements(pupil)
     print("Оценки исправлены, замечания удалены")
@@ -97,9 +97,9 @@ while True:
         if choice == "нет":
             sys.exit("Завершаю работу. Не забудьте удалить следы своего присутствия на сайте!")
         while not commendation_subject:
-            pprint(subjects)
+            pprint(SUBJECTS)
             commendation_subject = input("Выберите название предмета из списка: ")
-            if commendation_subject in subjects:
+            if commendation_subject in SUBJECTS:
                 create_commendation(commendation_subject, pupil)
             else:
                 print("Где-то опечатка. Сверьтесь с названием из списка, а лучше скопируйте его")
