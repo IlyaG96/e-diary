@@ -8,7 +8,6 @@ from datacenter.models import Lesson
 from datacenter.models import Commendation
 from datacenter.models import Subject
 from datacenter.models import Teacher
-
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.exceptions import MultipleObjectsReturned
 
@@ -61,9 +60,10 @@ def create_commendation(commendation_subject, pupil):
     subject = Subject.objects.get(year_of_study=pupil.year_of_study,
                                   title=commendation_subject)
 
-    pupils_subject = Lesson.objects.filter(year_of_study=pupil.year_of_study,
-                                           group_letter=pupil.group_letter,
-                                           subject=subject).order_by("?").first()
+    pupils_subject = Lesson.objects.filter(
+        year_of_study=pupil.year_of_study,
+        group_letter=pupil.group_letter,
+        subject=subject).order_by("?").only("date", "teacher").first()
 
     teacher_id = Teacher.objects.get(full_name=pupils_subject.teacher)
 
