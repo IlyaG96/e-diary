@@ -47,8 +47,7 @@ def get_pupil_from_db(name):
 
 def correct_points(pupil):
     marks = Mark.objects.filter(schoolkid=pupil, points__lte=3)
-    for num in range(marks.count()):
-        mark_to_correct = marks[num]
+    for mark_to_correct in marks:
         mark_to_correct.points = 5
         mark_to_correct.save()
 
