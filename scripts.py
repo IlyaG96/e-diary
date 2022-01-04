@@ -58,22 +58,21 @@ def remove_chastisements(pupil):
 
 
 def create_commendation(commendation_subject, pupil):
-
-    subject = Subject.objects.filter(year_of_study=pupil.year_of_study,
-                                     title=commendation_subject).first()
+    subject = Subject.objects.get(year_of_study=pupil.year_of_study,
+                                  title=commendation_subject)
 
     pupils_subject = Lesson.objects.filter(year_of_study=pupil.year_of_study,
                                            group_letter=pupil.group_letter,
-                                           subject=subject)
+                                           subject=subject).order_by("?").first()
 
-    random_date_subject = random.choice(pupils_subject)
-    teacher_id = Teacher.objects.filter(full_name=random_date_subject.teacher).first()
+    teacher_id = Teacher.objects.get(full_name=pupils_subject.teacher)
+
     commendation = Commendation.objects.filter(subject=subject,
                                                schoolkid=pupil,
-                                               created=random_date_subject.date)
+                                               created=pupils_subject.date)
 
     commendation.create(text=random.choice(COMMENDATIONS),
-                        created=random_date_subject.date,
+                        created=pupils_subject.date,
                         schoolkid=pupil,
                         teacher=teacher_id,
                         subject=subject)
@@ -103,4 +102,3 @@ while True:
             else:
                 print("Где-то опечатка. Сверьтесь с названием из списка, а лучше скопируйте его")
             commendation_subject = None
-
