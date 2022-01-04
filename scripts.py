@@ -9,6 +9,9 @@ from datacenter.models import Commendation
 from datacenter.models import Subject
 from datacenter.models import Teacher
 
+from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import MultipleObjectsReturned
+
 COMMENDATIONS = [
     "Молодец!", "Отлично!", "Хорошо!", "Гораздо лучше, чем я ожидал!",
     "Ты меня приятно удивил!", "Великолепно!", "Прекрасно!", "Ты меня очень обрадовал!",
@@ -31,22 +34,15 @@ SUBJECTS = [
 ]
 
 
-def choice_pupil():
-    pupil = None
-    print("Вас приветствует система взлома электронного дневника!\n"
-          "Введите, пожалуйста, свои фамилию и имя через пробел")
-    while not pupil:
-        name = input(":")
-        pupil = Schoolkid.objects.filter(full_name__icontains=name.title())
-        if not pupil:
-            print("Такой ученик в школе не учится. Попробуйте еще раз или уточните запрос\n"
-                  "(возможно, стоит поменять фамилию и имя местами)")
-        elif len(pupil) > 1:
-            print("Найдено несколько учеников, уточните запрос!")
-            pupil = None
-        else:
-            pupil = pupil.first()
-            return pupil
+def get_pupil_from_db(name):
+    try:
+        pupil = Schoolkid.objects.get(full_name__icontains=name.title())
+        return pupil
+    except ObjectDoesNotExist:
+        print("Такой ученик в школе не учится. Попробуйте еще раз или уточните запрос\n"
+              "Возможно, стоит поменять фамилию и имя местами")
+    except MultipleObjectsReturned:
+        print("Найдено несколько учеников, уточните запрос!")
 
 
 def correct_points(pupil):
@@ -85,8 +81,12 @@ def create_commendation(commendation_subject, pupil):
 
 
 while True:
-    choice, commendation_subject = "", ""
-    pupil = choice_pupil()
+    choice, commendation_subject, pupil = "", "", None
+    print("Вас приветствует система взлома электронного дневника!\n"
+          "Введите, пожалуйста, свои фамилию и имя через пробел")
+    while not pupil:
+        name = input(":")
+        pupil = get_pupil_from_db(name)
     correct_points(pupil)
     remove_chastisements(pupil)
     print("Оценки исправлены, замечания удалены")
