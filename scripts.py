@@ -8,8 +8,6 @@ from datacenter.models import Lesson
 from datacenter.models import Commendation
 from datacenter.models import Subject
 from datacenter.models import Teacher
-from django.core.exceptions import ObjectDoesNotExist
-from django.core.exceptions import MultipleObjectsReturned
 
 COMMENDATIONS = [
     "Молодец!", "Отлично!", "Хорошо!", "Гораздо лучше, чем я ожидал!",
@@ -37,10 +35,10 @@ def get_pupil_from_db(name):
     try:
         pupil = Schoolkid.objects.get(full_name__icontains=name.title())
         return pupil
-    except ObjectDoesNotExist:
+    except Schoolkid.DoesNotExist:
         print("Такой ученик в школе не учится. Попробуйте еще раз или уточните запрос\n"
               "Возможно, стоит поменять фамилию и имя местами")
-    except MultipleObjectsReturned:
+    except Schoolkid.MultipleObjectsReturned:
         print("Найдено несколько учеников, уточните запрос!")
 
 
